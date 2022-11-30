@@ -1,3 +1,8 @@
+from rest_framework import viewsets
+from rest_framework import permissions
+from polls.serializers import QuestionSerializer, ChoiceSerializer
+
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -6,6 +11,28 @@ from django.utils import timezone
 
 from .models import Choice, Question
 
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Question.objects.all().order_by('pub_date', 'question_text')
+    serializer_class = QuestionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class ChoiceViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Choice.objects.all().order_by('question', 'choice_text', 'votes')
+    serializer_class = ChoiceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+
+"""from mysite.polls.serializers import QuestionSerialalizer
+from rest_framework import generics"""
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
