@@ -27,16 +27,12 @@ from polls import views
 
 
 router = routers.DefaultRouter()
-router.register(r'polls', views.QuestionViewSet)
-router.register(r'admin', views.ChoiceViewSet)
+router.register(r'api/v1/polls', views.QuestionViewSet)
+router.register(r'api/v1/admin', views.ChoiceViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
-
-
-"""urlpatterns = [
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
-]"""
+]
