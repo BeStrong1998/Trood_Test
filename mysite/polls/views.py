@@ -2,7 +2,6 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from polls.serializers import QuestionSerializer, ChoiceSerializer
 
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -10,6 +9,39 @@ from django.views import generic
 from django.utils import timezone
 
 from .models import Choice, Question
+
+from django.contrib.auth.models import User
+from polls.serializers import UserSerializer
+from rest_framework import generics
+from rest_framework import permissions
+from polls.permissions import IsOwnerOrReadOnly
+
+
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class QuestionList(generics.ListCreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.seve(owner=self.request.user)
+
+class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+
+
 
 
 class QuestionViewSet(viewsets.ModelViewSet):
