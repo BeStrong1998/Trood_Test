@@ -33,7 +33,9 @@ class QuestionList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.seve(owner=self.request.user)
+        serializer.validated_data['owner'] = self.request.user
+        serializer.save()
+        #serializer.seve(owner=self.request.user)
 
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
@@ -46,7 +48,7 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class QuestionViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    Конечная точка API, которая позволяет просматривать или редактировать пользователей.
     """
     queryset = Question.objects.all().order_by('pub_date', 'question_text')
     serializer_class = QuestionSerializer
@@ -55,7 +57,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
 class ChoiceViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+   Конечная точка API, которая позволяет просматривать или редактировать группы.
     """
     queryset = Choice.objects.all().order_by('question', 'choice_text', 'votes')
     serializer_class = ChoiceSerializer
@@ -64,7 +66,8 @@ class ChoiceViewSet(viewsets.ModelViewSet):
 
 
 """from mysite.polls.serializers import QuestionSerialalizer
-from rest_framework import generics"""
+from rest_framework import generics (из mysite.polls.serializers импортируйте QuestionSerializer
+из rest_framework импортируйте дженерики)"""
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
@@ -74,6 +77,8 @@ class IndexView(generic.ListView):
         """
         Return the last five published questions (not including those set to be
         published in the future).
+        Верните последние пять опубликованных вопросов (не включая те, которые будут
+        опубликованы в будущем)
         """
         return Question.objects.filter(
             pub_date__lte=timezone.now()
@@ -86,6 +91,7 @@ class DetailView(generic.DetailView):
     def get_queryset(self):
         """
         Excludes any questions that aren't published yet.
+        Исключает любые вопросы, которые еще не опубликованы.
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 

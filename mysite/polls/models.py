@@ -5,16 +5,15 @@ from django.utils import timezone
 from django.contrib import admin
 
 
-
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
-
-    owner = models.ForeignKey('auth.User', related_name='polls', on_delete=models.CASCADE)
+    owvner = models.ForeignKey('auth.User', on_delete=models.CASCADE, null = True)
+    survey = models.ForeignKey('Survey', related_name='polls', on_delete=models.CASCADE, null = True)
+    
 
     def __str__(self):
         return self.question_text
-
 
 
     @admin.display(
@@ -28,7 +27,6 @@ class Question(models.Model):
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
 
-
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
@@ -38,6 +36,8 @@ class Choice(models.Model):
         return self.choice_text
     
 
-
-"""class The_Survey(models.Model):
-    the_survey = """
+class Survey(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, null = True)
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=200)
+    owvner = models.ForeignKey('auth.User', on_delete=models.CASCADE, null = True)
