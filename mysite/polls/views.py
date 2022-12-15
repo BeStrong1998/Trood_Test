@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework import permissions
-from polls.serializers import QuestionSerializer, ChoiceSerializer
+from polls.serializers import QuestionSerializer, ChoiceSerializer, SurveySerializer
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
-from .models import Choice, Question
+from .models import Choice, Question, Survey
 
 from django.contrib.auth.models import User
 from polls.serializers import UserSerializer
@@ -43,7 +43,17 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
+class SurveyDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Question.objects.all()
+    serializer_class = SurveySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
+
+class SurveyViewSet(viewsets.ModelViewSet):
+    queryset = Survey.objects.all()
+    serializer_class = SurveySerializer
+    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
 class QuestionViewSet(viewsets.ModelViewSet):
@@ -52,7 +62,8 @@ class QuestionViewSet(viewsets.ModelViewSet):
     """
     queryset = Question.objects.all().order_by('pub_date', 'question_text')
     serializer_class = QuestionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
 class ChoiceViewSet(viewsets.ModelViewSet):

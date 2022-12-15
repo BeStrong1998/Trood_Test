@@ -28,7 +28,8 @@ from polls import views
 
 router = routers.DefaultRouter()
 router.register(r'api/v1/polls', views.QuestionViewSet)
-router.register(r'api/v1/admin', views.ChoiceViewSet)
+router.register(r'api/v1/choice', views.ChoiceViewSet)
+router.register(r'api/v1/survey',views.SurveyViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
