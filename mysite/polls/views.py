@@ -19,41 +19,65 @@ from polls.permissions import IsOwnerOrReadOnly
 
 
 class UserList(generics.ListAPIView):
+    """Конкретное представление для перечисления набора запросов."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 class UserDetail(generics.RetrieveAPIView):
+    """Конкретное представление для извлечения экземпляра модели."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+
 
 
 class QuestionList(generics.ListCreateAPIView):
+    """Конкретное представление для перечисления набора запросов или создания экземпляра модели."""
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
+    """Конкретное представление для извлечения, обновления или удаления экземпляра модели."""
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def perform_create(self, serializer):
-        serializer.validated_data['owner'] = self.request.user
-        serializer.save()
-        #serializer.seve(owner=self.request.user)
 
-class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+
+
+class SurveyList(generics.ListCreateAPIView):
+    queryset = Survey.objects.all()
+    serializer_class = SurveySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class SurveyDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Question.objects.all()
-    serializer_class = SurveySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-
-
-class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
-    #permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+
+
+"""Набор представлений, который предоставляет действия по умолчанию `create()`, `retrieve()`, `update()`,
+`partial_update()`, `destroy()` и `list()`."""
+class SurveyViewSet(viewsets.ModelViewSet):
+    """ Конечная точка API, которая позволяет просматривать или редактировать пользователей"""
+    queryset = Survey.objects.all().order_by('name', 'description')
+    serializer_class = SurveySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
 
 
 class QuestionViewSet(viewsets.ModelViewSet):
@@ -62,8 +86,8 @@ class QuestionViewSet(viewsets.ModelViewSet):
     """
     queryset = Question.objects.all().order_by('pub_date', 'question_text')
     serializer_class = QuestionSerializer
-    #permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+
 
 
 class ChoiceViewSet(viewsets.ModelViewSet):
@@ -73,7 +97,7 @@ class ChoiceViewSet(viewsets.ModelViewSet):
     queryset = Choice.objects.all().order_by('question', 'choice_text', 'votes')
     serializer_class = ChoiceSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    
 
 
 """from mysite.polls.serializers import QuestionSerialalizer

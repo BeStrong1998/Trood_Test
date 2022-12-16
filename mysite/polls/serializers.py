@@ -15,17 +15,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'polls', 'owner']
 
 
+
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ['pub_date', 'question_text', 'survey', 'owvner']
 
 
+
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Choice
         fields = ['question', 'choice_text', 'votes']
-
 
 
 

@@ -1,5 +1,7 @@
 import datetime
 import datetime
+
+from django.contrib.auth.models import User
 from django.conf import settings
 
 from django.db import models
@@ -10,8 +12,10 @@ from django.contrib import admin
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published', default=datetime.datetime.now())
-    owvner = models.ForeignKey('auth.User', on_delete=models.CASCADE, null = True)
+    owvner = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
     survey = models.ForeignKey('Survey', related_name='polls', on_delete=models.CASCADE, null = True)
+
+    #author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
     
 
     def __str__(self):
@@ -41,7 +45,7 @@ class Choice(models.Model):
 class Survey(models.Model):
     name = models.CharField(max_length=30)
     description = models.CharField(max_length=200)
-    owvner = models.ForeignKey('auth.User', on_delete=models.CASCADE, null = True)
+    owvner = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
 
     #author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
 
