@@ -18,23 +18,27 @@ from polls.permissions import IsOwnerOrReadOnly
 
 
 
-class UserList(generics.ListAPIView):
+#class UserList(generics.ListAPIView):
+class UserList(viewsets.ModelViewSet):  
     """Конкретное представление для перечисления набора запросов."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    #permission_classes = [permissions.IsAuthenticated]
+    
 
-
-class UserDetail(generics.RetrieveAPIView):
-    """Конкретное представление для извлечения экземпляра модели."""
+#class UserDetail(generics.RetrieveAPIView):
+"""class UserDetail(viewsets.ModelViewSet):
+    #Конкретное представление для извлечения экземпляра модели.
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    #permission_classes = [permissions.IsAuthenticated]"""
 
-
-
-
+"""
 
 class QuestionList(generics.ListCreateAPIView):
-    """Конкретное представление для перечисления набора запросов или создания экземпляра модели."""
+    #Конкретное представление для перечисления набора запросов или создания экземпляра модели.
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -42,16 +46,11 @@ class QuestionList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
-    """Конкретное представление для извлечения, обновления или удаления экземпляра модели."""
+    #Конкретное представление для извлечения, обновления или удаления экземпляра модели.
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-
-
 
 class SurveyList(generics.ListCreateAPIView):
     queryset = Survey.objects.all()
@@ -61,11 +60,10 @@ class SurveyList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
 class SurveyDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]"""
 
 
 
@@ -76,7 +74,10 @@ class SurveyViewSet(viewsets.ModelViewSet):
     """ Конечная точка API, которая позволяет просматривать или редактировать пользователей"""
     queryset = Survey.objects.all().order_by('name', 'description')
     serializer_class = SurveySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly] #чтобы все фрагменты кода были видны всем, но также чтобы убедиться, что только пользователь, создавший фрагмент кода, может обновить или удалить его.
+    #permission_classes = [permissions.IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(owvner=self.request.user)
     
 
 
@@ -86,7 +87,12 @@ class QuestionViewSet(viewsets.ModelViewSet):
     """
     queryset = Question.objects.all().order_by('pub_date', 'question_text')
     serializer_class = QuestionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly] #чтобы все фрагменты кода были видны всем, но также чтобы убедиться, что только пользователь, создавший фрагмент кода, может обновить или удалить его.
+    #permission_classes = [permissions.IsAuthenticated]
+    def perform_create(self, serializer):   #делает связать пользователя, создавшего фрагмент, с экземпляром фрагмента (Пользователь является автором)
+        serializer.save(owvner=self.request.user)
+
+
 
 
 
@@ -96,8 +102,11 @@ class ChoiceViewSet(viewsets.ModelViewSet):
     """
     queryset = Choice.objects.all().order_by('question', 'choice_text', 'votes')
     serializer_class = ChoiceSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly] #чтобы все фрагменты кода были видны всем, но также чтобы убедиться, что только пользователь, создавший фрагмент кода, может обновить или удалить его.
+    #permission_classes = [permissions.IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(owvner=self.request.user)
+
 
 
 """from mysite.polls.serializers import QuestionSerialalizer
@@ -117,7 +126,7 @@ class IndexView(generic.ListView):
         """
         return Question.objects.filter(
             pub_date__lte=timezone.now()
-        ).order_by('-pub_date')[:5]
+        ).order_by('-pub_date')[:10]
 
 
 class DetailView(generic.DetailView):
@@ -134,6 +143,7 @@ class DetailView(generic.DetailView):
 class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
+
 
 
 def vote(request, question_id):

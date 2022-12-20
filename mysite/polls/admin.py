@@ -4,7 +4,6 @@ from .models import *
 
 
 
-
 admin.site.register(Survey)
 
 
