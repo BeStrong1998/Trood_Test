@@ -17,31 +17,24 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-
-
-from django.urls import include, path
 from rest_framework import routers
-
-
 from polls import views
 
 
 router = routers.DefaultRouter()
-#router.register(r'<int:pk>/results/', views.ResultsView)
-
-router.register(r'api/v1/users', views.UserList)
-router.register(r'api/v1/question', views.QuestionViewSet)
-router.register(r'api/v1/choice', views.ChoiceViewSet)
-router.register(r'api/v1/survey', views.SurveyViewSet)
+"""router.register(r'api/v1/choice', ChoiceViewSet, basename='oleg')
+print(router.urls)"""
+router.register(r'group', views.GroupViewset)
+router.register(r'users', views.UserViewset)
+router.register(r'question', views.QuestionViewSet)
+router.register(r'choice', views.ChoiceViewSet)
+router.register(r'survey', views.SurveyViewSet)
 
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/v1/', include(router.urls)),
+    path('api-auth/', include(
+        'rest_framework.urls', namespace='rest_framework')),
     path('polls/', include('polls.urls')),
-    path('admin/', admin.site.urls),   
+    path('admin/', admin.site.urls),
 ]
-
-"""urlpatterns += [
-    path('api-auth/', include('rest_framework.urls'))
-]"""
