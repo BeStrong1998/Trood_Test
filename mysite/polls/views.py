@@ -76,9 +76,10 @@ class ChoiceViewSet(viewsets.ModelViewSet):
             e = APIException
             e.status_code = 400
             raise e
-        """Если метод request возвращает GET;
-            Записываем в переменную e APIException;
-            Далее """
+        """Если метод request возвращает запрос POST;
+            Записываем в переменную -e- APIException;
+            Далее говорим что e.status_code = 400;
+            Объявляем ошибку raise e"""
 
         obj = self.get_object()
         obj.votes += 1
@@ -128,7 +129,7 @@ def vote(request, question_id):
         # Повторно отобразите форму голосования по вопросу.
         return render(request, 'polls/detail.html', {
             'question': question,
-            'error_message': "You didn't select a choice.",
+            'error_message': "Выберете ответ",
         })
     else:
         selected_choice.votes += 1
@@ -137,7 +138,7 @@ def vote(request, question_id):
         # с данными POST. Это предотвращает повторную публикацию данных, если
         # пользователь нажимает кнопку "Назад".
         return HttpResponseRedirect(reverse(
-            'polls:results', args=(question.id)))
+            'polls:results', args=[question.id]))
 
     """
 class QuestionList(generics.ListCreateAPIView):
