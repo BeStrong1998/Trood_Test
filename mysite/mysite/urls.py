@@ -37,4 +37,6 @@ urlpatterns = [
         'rest_framework.urls', namespace='rest_framework')),
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
+
+    path('api/', views.api), #подключаем маршрутизатор для декоратора @api_view(api)
 ]

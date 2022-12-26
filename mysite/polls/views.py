@@ -1,3 +1,4 @@
+from rest_framework.response import Response
 from rest_framework import response
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -11,7 +12,7 @@ from django.utils import timezone
 from .models import Choice, Question, Survey
 from django.contrib.auth.models import User, Group
 from polls.serializers import UserSerializer, GroupSerialaizer
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from polls.permissions import IsOwnerOrReadOnly
 from rest_framework.exceptions import APIException
 
@@ -69,22 +70,40 @@ class ChoiceViewSet(viewsets.ModelViewSet):
         что только пользователь, создавший фрагмент кода,
         может обновить или удалить его."""
 
-    @action(detail=True, methods=['get', 'post'])
+    @action(detail=True, methods=['get', 'post', 'put', 'patch'])
     def votes(self, request, pk=None):
         """raise APIException"""
-        if request.method == 'POST':
+        if request.method == 'GET':
             e = APIException
             e.status_code = 400
-            raise e
+            raise e('Ошибка на сервере')
+
         """Если метод request возвращает запрос POST;
             Записываем в переменную -e- APIException;
             Далее говорим что e.status_code = 400;
             Объявляем ошибку raise e"""
-
         obj = self.get_object()
         obj.votes += 1
         obj.save()
         return response.Response({'votes': obj.votes})
+
+    @action(detail=False, methods=['post', 'get'])
+    def votes_get(self, request):
+        if request.method == 'GET':
+            raise APIException(404)
+        else:
+            return response.Response({'Можно вернуть что то дополнительно'})
+
+
+@api_view(('POST', 'GET'))
+def api(request):
+    if request.method == 'GET':
+        return Response({'status': '200'})
+    else:
+        request.method = 'POST'
+        ex = APIException
+        ex.status_code = 404
+        raise ex({'detail': 'Сервер временно недоступен'})
 
 
 class IndexView(generic.ListView):
