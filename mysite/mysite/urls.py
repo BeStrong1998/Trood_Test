@@ -39,4 +39,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/', views.api), #подключаем маршрутизатор для декоратора @api_view(api)
+    #path('users/', views.GroupViewset.as_view()), #подключаем generics
 ]

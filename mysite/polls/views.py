@@ -15,6 +15,8 @@ from polls.serializers import UserSerializer, GroupSerialaizer
 from rest_framework.decorators import action, api_view
 from polls.permissions import IsOwnerOrReadOnly
 from rest_framework.exceptions import APIException
+from rest_framework import generics
+from rest_framework.permissions import IsAdminUser
 
 
 class GroupViewset(viewsets.ModelViewSet):
@@ -23,18 +25,23 @@ class GroupViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+"""class GroupViewset(generics.ListCreateAPIView):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerialaizer
+    permission_classes = [IsAdminUser]"""
+
+
 class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly]
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all().order_by('name', 'description')
     serializer_class = SurveySerializer
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly
-        ]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     """чтобы все фрагменты кода были видны всем, но также чтобы убедиться,
     что только пользователь, создавший фрагмент кода,
     может обновить или удалить его."""
@@ -46,9 +53,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all().order_by('pub_date', 'question_text')
     serializer_class = QuestionSerializer
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly
-        ]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     """чтобы все фрагменты кода были видны всем, но также чтобы убедиться,
         что только пользователь, создавший фрагмент кода,
         может обновить или удалить его."""
