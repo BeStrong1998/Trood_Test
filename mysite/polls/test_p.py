@@ -1,5 +1,5 @@
 import pytest
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APITestCase
 
 from polls.models import Survey, Question, User
 
@@ -19,23 +19,25 @@ def test_list_survey(api_client):
     assert response.status_code == 200"""
 
 
-class TestSurvey:
+class TestSurvey():
 
     endpoint = '/api/v1/survey/'        #Много запросов
     enndpoint_1 = '/api/v1/survey/1/'   #Один запрос
 
     def test_list(self, api_client):
-        client = APIClient()
-        user = User.objects.create_user('admin', password='1234') #Создаём объект пользователя
+        user = User.objects.create_user(username='admin', password='1234') #Создаём объект пользователя
         user.save() #добавляем в БД пользователя
+        client = APIClient()
         client.login(username='admin', password='1234') #авторизуем нашего пользователя
+        #client.get('/login/', {'username': 'admin', 'password': '1234'})
         survey = Survey(name="name1", description="description1", owvner=user) #создаём объект для модели Survey и присваиваем её полям значения
         survey.save() #Добавляем объект в БД
 
         response = api_client().get(self.endpoint)
         print(response.data[["results"][0]])
         assert response.status_code == 200
-        
+        assert User.objects.count() == 1
+        print(User.objects.all())
 
         """print(response.data["results"][0])      #Печатаем запрос в консоль
         assert response.data["results"][0]["name"] == "name1"  #Проверяем значение в поле "name"
@@ -54,7 +56,7 @@ class TestSurvey:
         assert response_1.status_code == 200    #Проверяем что запрос существует"""
 
 
-class TestQuestion:
+class TestQuestion():
 
     enndpoint_2 = '/api/v1/question/'
 

@@ -34,13 +34,13 @@ class GroupViewset(viewsets.ModelViewSet):
 class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all().order_by('name', 'description')
     serializer_class = SurveySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     """чтобы все фрагменты кода были видны всем, но также чтобы убедиться,
     что только пользователь, создавший фрагмент кода,
     может обновить или удалить его."""
